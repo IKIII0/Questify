@@ -1,4 +1,4 @@
-# Quizziko
+# Questify
 
 ## 👤 Identitas Mahasiswa
 - **Nama:** Rifki Al Sauqy
@@ -7,7 +7,7 @@
 - **Mata Praktikum:** Pemrograman Mobile
 
 ## 📱 Informasi Aplikasi
-- **Nama Aplikasi:** Quizziko
+- **Nama Aplikasi:** Questify
 - **Deskripsi:** Aplikasi kuis pilihan ganda interaktif dengan tema editorial modern, mendukung input nama pengguna, skor dinamis, preservasi state saat rotasi layar, serta mode gelap dan terang.
 - **Fitur Utama:**
   - Dual Theme (Light & Dark Mode)
