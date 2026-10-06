@@ -1,30 +1,32 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Smoke test dasar untuk Questify: memastikan aplikasi dapat dibangun dan
+// mode tema dapat diganti secara global lewat ThemeNotifier.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:questify/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUpAll(() {
+    // Cegah google_fonts mencoba mengunduh font saat pengujian.
+    GoogleFonts.config.allowRuntimeFetching = false;
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('QuestifyApp tampil dan tema dapat diganti', (tester) async {
+    await tester.pumpWidget(const QuestifyApp());
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    expect(find.text('Uji Pengetahuanmu'), findsOneWidget);
+
+    final initialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(initialApp.themeMode, ThemeMode.system);
+    expect(find.byIcon(Icons.dark_mode_outlined), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.dark_mode_outlined));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final updatedApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(updatedApp.themeMode, ThemeMode.dark);
+    expect(find.byIcon(Icons.light_mode_outlined), findsOneWidget);
   });
 }
