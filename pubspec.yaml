@@ -1,4 +1,4 @@
-name: Questify
+name: questify
 description: "Aplikasi kuis pilihan ganda interaktif dengan tema editorial modern, mendukung input nama pengguna, skor dinamis, preservasi state saat rotasi layar, serta mode gelap dan terang."
 publish_to: "none"
 version: 1.0.0+1
