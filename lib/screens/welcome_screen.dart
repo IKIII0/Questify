@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../theme/app_theme.dart';
+import '../widgets/app_logo.dart';
 import 'quiz_screen.dart';
 
 /// Halaman pembuka Questify.
@@ -37,8 +38,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Questify'),
@@ -78,13 +77,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             onSubmitted: (_) => _startQuiz(),
                           ),
                           const SizedBox(height: 20),
-                          SizedBox(
-                            height: 54,
-                            child: FilledButton.icon(
-                              onPressed: _startQuiz,
-                              icon: const Icon(Icons.play_arrow_rounded),
-                              label: const Text('Mulai Kuis'),
-                            ),
+                          FilledButton.icon(
+                            onPressed: _startQuiz,
+                            icon: const Icon(Icons.play_arrow_rounded),
+                            label: const Text('Mulai Kuis'),
                           ),
                           const SizedBox(height: 14),
                         ],
@@ -135,7 +131,7 @@ class _HeaderBanner extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const _BadgeIcon(),
+          const AppLogo(size: 96, style: AppLogoStyle.glass),
           const SizedBox(height: 20),
           Text(
             'Selamat Datang di Questify',
@@ -154,46 +150,6 @@ class _HeaderBanner extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Lingkaran ikon bergaya badge dengan efek kaca.
-class _BadgeIcon extends StatelessWidget {
-  const _BadgeIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 96,
-      height: 96,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.30),
-            Colors.white.withValues(alpha: 0.10),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.45),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.20),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.psychology_rounded,
-        size: 48,
-        color: Colors.white,
       ),
     );
   }
@@ -258,13 +214,15 @@ class _ThemeToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = context.watch<ThemeNotifier>();
+    final themeNotifier = context.read<ThemeNotifier>();
+    // Brightness efektif yang sedang tampil (memperhitungkan ThemeMode.system),
+    // sehingga ikon & aksi toggle selalu sesuai kondisi nyata di layar.
+    final brightness = Theme.of(context).brightness;
+    final isDark = brightness == Brightness.dark;
 
     return IconButton(
-      tooltip: themeNotifier.isDarkMode
-          ? 'Aktifkan light mode'
-          : 'Aktifkan dark mode',
-      onPressed: themeNotifier.toggleTheme,
+      tooltip: isDark ? 'Aktifkan light mode' : 'Aktifkan dark mode',
+      onPressed: () => themeNotifier.toggleTheme(brightness),
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 220),
         transitionBuilder: (child, animation) => RotationTransition(
@@ -272,10 +230,8 @@ class _ThemeToggleButton extends StatelessWidget {
           child: FadeTransition(opacity: animation, child: child),
         ),
         child: Icon(
-          themeNotifier.isDarkMode
-              ? Icons.light_mode_rounded
-              : Icons.dark_mode_rounded,
-          key: ValueKey<bool>(themeNotifier.isDarkMode),
+          isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+          key: ValueKey<bool>(isDark),
         ),
       ),
     );
