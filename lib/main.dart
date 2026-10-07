@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/welcome_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -41,7 +41,7 @@ class _QuestifyAppState extends State<QuestifyApp> {
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: themeNotifier.themeMode,
-            home: const WelcomeScreen(),
+            home: const SplashScreen(),
           );
         },
       ),
