@@ -22,6 +22,10 @@ class AppColors {
   static const Color lightTextPrimary = Color(0xFF0F172A);
   static const Color lightTextSecondary = Color(0xFF64748B);
 
+  // Warna semantik untuk jawaban benar (dipakai OptionCard & hasil kuis).
+  static const Color successLight = Color(0xFF16A34A);
+  static const Color successDark = Color(0xFF4ADE80);
+
   // Dark palette
   static const Color darkPrimary = Color(0xFF60A5FA);
   static const Color darkSecondary = Color(0xFF34D399);
