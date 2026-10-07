@@ -493,7 +493,15 @@ class ThemeNotifier extends ChangeNotifier {
 
   ThemeMode get themeMode => _themeMode;
 
-  bool get isDarkMode => _themeMode == ThemeMode.dark;
+  /// Apakah tema efektif gelap, dengan memperhitungkan [ThemeMode.system]
+  /// dan brightness perangkat [platformBrightness].
+  bool isDark(Brightness platformBrightness) {
+    return switch (_themeMode) {
+      ThemeMode.dark => true,
+      ThemeMode.light => false,
+      ThemeMode.system => platformBrightness == Brightness.dark,
+    };
+  }
 
   /// Mengubah mode tema secara eksplisit (light, dark, atau system).
   void setThemeMode(ThemeMode mode) {
@@ -502,10 +510,15 @@ class ThemeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Membalik mode terang/gelap. Mode [ThemeMode.system] dianggap terang.
-  void toggleTheme() {
+  /// Membalik terang/gelap berdasarkan brightness efektif yang sedang tampil.
+  ///
+  /// [currentBrightness] harus brightness efektif (mis.
+  /// `Theme.of(context).brightness`), bukan sekadar mode tersimpan. Dengan
+  /// begitu, toggle pertama dari [ThemeMode.system] yang sedang gelap akan
+  /// langsung berpindah ke light (dan sebaliknya).
+  void toggleTheme(Brightness currentBrightness) {
     setThemeMode(
-      _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+      currentBrightness == Brightness.dark ? ThemeMode.light : ThemeMode.dark,
     );
   }
 }
