@@ -31,9 +31,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     final userName = _nameController.text.trim();
     Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => QuizScreen(userName: userName),
-      ),
+      MaterialPageRoute<void>(builder: (_) => QuizScreen(userName: userName)),
     );
   }
 
@@ -89,15 +87,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             ),
                           ),
                           const SizedBox(height: 14),
-                          Text(
-                            'Namamu akan ditampilkan selama kuis berlangsung.',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  theme.extension<AppColorsExtension>()?.textSecondary ??
-                                  theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
                         ],
                       ),
                     ),
