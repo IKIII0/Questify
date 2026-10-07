@@ -89,8 +89,46 @@ void main() {
     }
 
     // Semua jawaban benar -> skor 100% di ResultScreen.
-    expect(find.text('Hasil kuis untuk Andi'), findsOneWidget);
-    expect(find.text('100%'), findsOneWidget);
-    expect(find.text('Main Lagi'), findsOneWidget);
+    expect(find.text('Selamat, Andi!'), findsOneWidget);
+    expect(find.text('100'), findsOneWidget);
+    expect(find.text('Luar Biasa!'), findsOneWidget);
+    expect(find.text('Ulangi Kuis'), findsOneWidget);
+    expect(find.text('Kembali ke Beranda'), findsOneWidget);
+  });
+
+  testWidgets('Skor rendah menampilkan evaluasi Coba Lagi', (tester) async {
+    await tester.pumpWidget(const QuestifyApp());
+
+    await tester.enterText(find.byType(TextFormField), 'Budi');
+    await tester.ensureVisible(find.text('Mulai Kuis'));
+    await tester.tap(find.text('Mulai Kuis'));
+    await tester.pumpAndSettle();
+
+    // Jawab semua soal dengan opsi yang salah.
+    for (var i = 0; i < listQuestions.length; i++) {
+      final question = listQuestions[i];
+      final wrongIndex =
+          (question.correctOptionIndex + 1) % question.options.length;
+      final option = find.byType(OptionCard).at(wrongIndex);
+
+      await tester.ensureVisible(option);
+      await tester.tap(option);
+      await tester.pump();
+
+      await tester.tap(find.text('Konfirmasi Jawaban'));
+      await tester.pump();
+
+      if (i == listQuestions.length - 1) {
+        await tester.tap(find.text('Lihat Hasil'));
+        await tester.pumpAndSettle();
+      } else {
+        await tester.tap(find.text('Selanjutnya'));
+        await tester.pump();
+      }
+    }
+
+    expect(find.text('Selamat, Budi!'), findsOneWidget);
+    expect(find.text('Coba Lagi!'), findsOneWidget);
+    expect(find.text('5'), findsOneWidget); // 5 jawaban salah
   });
 }
