@@ -9,13 +9,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:Questify/main.dart';
-import 'package:Questify/models/question_model.dart';
-import 'package:Questify/widgets/option_card.dart';
+import 'package:questify/main.dart';
+import 'package:questify/models/question_model.dart';
+import 'package:questify/widgets/option_card.dart';
+
+/// Menjalankan app lalu melewati splash screen hingga tiba di WelcomeScreen.
+Future<void> _pumpApp(WidgetTester tester) async {
+  await tester.pumpWidget(const QuestifyApp());
+  await tester.pump(const Duration(seconds: 2));
+  await tester.pumpAndSettle();
+}
 
 /// Menjalankan seluruh alur: Welcome -> Kuis (jawab benar semua) -> Hasil.
 Future<void> _runFullFlow(WidgetTester tester) async {
-  await tester.pumpWidget(const QuestifyApp());
+  await _pumpApp(tester);
   expect(find.text('Mulai Kuis'), findsOneWidget);
 
   await tester.enterText(find.byType(TextFormField), 'Andi');
@@ -96,9 +103,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetViewInsets);
 
-    await tester.pumpWidget(const QuestifyApp());
-    await tester.pumpAndSettle();
-
+    await _pumpApp(tester);
     expect(find.text('Mulai Kuis'), findsOneWidget);
   });
 }

@@ -1,13 +1,21 @@
-// Smoke test untuk Questify: membangun aplikasi, menguji toggle tema global,
-// validasi nama pada WelcomeScreen, dan alur kuis sampai ResultScreen.
+// Smoke test untuk Questify: splash screen, toggle tema global, validasi nama
+// pada WelcomeScreen, dan alur kuis sampai ResultScreen.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:Questify/main.dart';
-import 'package:Questify/models/question_model.dart';
-import 'package:Questify/widgets/option_card.dart';
+import 'package:questify/main.dart';
+import 'package:questify/models/question_model.dart';
+import 'package:questify/widgets/app_logo.dart';
+import 'package:questify/widgets/option_card.dart';
+
+/// Menjalankan app lalu melewati splash screen hingga tiba di WelcomeScreen.
+Future<void> _pumpApp(WidgetTester tester) async {
+  await tester.pumpWidget(const QuestifyApp());
+  await tester.pump(const Duration(seconds: 2));
+  await tester.pumpAndSettle();
+}
 
 void main() {
   setUpAll(() {
@@ -15,8 +23,23 @@ void main() {
     GoogleFonts.config.allowRuntimeFetching = false;
   });
 
-  testWidgets('WelcomeScreen tampil dan tema dapat diganti', (tester) async {
+  testWidgets('SplashScreen menampilkan logo lalu pindah ke WelcomeScreen', (
+    tester,
+  ) async {
     await tester.pumpWidget(const QuestifyApp());
+
+    expect(find.byType(AppLogo), findsOneWidget);
+    expect(find.text('Questify'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Selamat Datang di Questify'), findsOneWidget);
+    expect(find.text('Mulai Kuis'), findsOneWidget);
+  });
+
+  testWidgets('WelcomeScreen tampil dan tema dapat diganti', (tester) async {
+    await _pumpApp(tester);
 
     expect(find.text('Selamat Datang di Questify'), findsOneWidget);
     expect(find.text('Mulai Kuis'), findsOneWidget);
@@ -26,15 +49,37 @@ void main() {
     expect(find.byIcon(Icons.dark_mode_rounded), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.dark_mode_rounded));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     final updatedApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(updatedApp.themeMode, ThemeMode.dark);
     expect(find.byIcon(Icons.light_mode_rounded), findsOneWidget);
   });
 
+  testWidgets('Toggle dari tema sistem gelap langsung ke light', (
+    tester,
+  ) async {
+    // Simulasikan HP dalam dark mode; app memakai ThemeMode.system.
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+
+    await _pumpApp(tester);
+
+    // Tema efektif gelap -> ikon menawarkan light mode.
+    expect(find.byIcon(Icons.light_mode_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.dark_mode_rounded), findsNothing);
+
+    // Tekan pertama kali harus berpindah ke light, bukan tetap gelap.
+    await tester.tap(find.byIcon(Icons.light_mode_rounded));
+    await tester.pumpAndSettle();
+
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.themeMode, ThemeMode.light);
+    expect(find.byIcon(Icons.dark_mode_rounded), findsOneWidget);
+  });
+
   testWidgets('Validasi nama dan navigasi ke QuizScreen', (tester) async {
-    await tester.pumpWidget(const QuestifyApp());
+    await _pumpApp(tester);
 
     await tester.ensureVisible(find.text('Mulai Kuis'));
     await tester.tap(find.text('Mulai Kuis'));
@@ -54,7 +99,7 @@ void main() {
   });
 
   testWidgets('Alur kuis lengkap sampai ResultScreen', (tester) async {
-    await tester.pumpWidget(const QuestifyApp());
+    await _pumpApp(tester);
 
     await tester.enterText(find.byType(TextFormField), 'Andi');
     await tester.ensureVisible(find.text('Mulai Kuis'));
@@ -97,7 +142,7 @@ void main() {
   });
 
   testWidgets('Skor rendah menampilkan evaluasi Coba Lagi', (tester) async {
-    await tester.pumpWidget(const QuestifyApp());
+    await _pumpApp(tester);
 
     await tester.enterText(find.byType(TextFormField), 'Budi');
     await tester.ensureVisible(find.text('Mulai Kuis'));
