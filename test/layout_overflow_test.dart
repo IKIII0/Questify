@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:questify/main.dart';
-import 'package:questify/models/question_model.dart';
-import 'package:questify/widgets/option_card.dart';
+import 'package:Questify/main.dart';
+import 'package:Questify/models/question_model.dart';
+import 'package:Questify/widgets/option_card.dart';
 
 /// Menjalankan seluruh alur: Welcome -> Kuis (jawab benar semua) -> Hasil.
 Future<void> _runFullFlow(WidgetTester tester) async {
