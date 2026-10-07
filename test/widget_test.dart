@@ -1,11 +1,13 @@
 // Smoke test untuk Questify: membangun aplikasi, menguji toggle tema global,
-// dan memverifikasi validasi nama pada WelcomeScreen.
+// validasi nama pada WelcomeScreen, dan alur kuis sampai ResultScreen.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:questify/main.dart';
+import 'package:questify/models/question_model.dart';
+import 'package:questify/widgets/option_card.dart';
 
 void main() {
   setUpAll(() {
@@ -34,22 +36,61 @@ void main() {
   testWidgets('Validasi nama dan navigasi ke QuizScreen', (tester) async {
     await tester.pumpWidget(const QuestifyApp());
 
-    // Kosong -> error.
     await tester.ensureVisible(find.text('Mulai Kuis'));
     await tester.tap(find.text('Mulai Kuis'));
     await tester.pump();
     expect(find.text('Nama tidak boleh kosong'), findsOneWidget);
 
-    // Terlalu pendek -> error.
     await tester.enterText(find.byType(TextFormField), 'ab');
     await tester.tap(find.text('Mulai Kuis'));
     await tester.pump();
     expect(find.text('Nama minimal 3 karakter'), findsOneWidget);
 
-    // Valid -> berpindah ke QuizScreen dengan nama yang dibawa.
     await tester.enterText(find.byType(TextFormField), 'Andi');
     await tester.tap(find.text('Mulai Kuis'));
     await tester.pumpAndSettle();
-    expect(find.text('Halo, Andi!'), findsOneWidget);
+    expect(find.text('Semangat, Andi!'), findsOneWidget);
+    expect(find.text('Konfirmasi Jawaban'), findsOneWidget);
+  });
+
+  testWidgets('Alur kuis lengkap sampai ResultScreen', (tester) async {
+    await tester.pumpWidget(const QuestifyApp());
+
+    await tester.enterText(find.byType(TextFormField), 'Andi');
+    await tester.ensureVisible(find.text('Mulai Kuis'));
+    await tester.tap(find.text('Mulai Kuis'));
+    await tester.pumpAndSettle();
+
+    // Tombol belum aktif sebelum memilih opsi.
+    final confirmButton = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Konfirmasi Jawaban'),
+    );
+    expect(confirmButton.onPressed, isNull);
+
+    for (var i = 0; i < listQuestions.length; i++) {
+      final question = listQuestions[i];
+      final option = find.byType(OptionCard).at(question.correctOptionIndex);
+
+      await tester.ensureVisible(option);
+      await tester.tap(option);
+      await tester.pump();
+
+      await tester.tap(find.text('Konfirmasi Jawaban'));
+      await tester.pump();
+      expect(find.text('Jawaban Benar!'), findsOneWidget);
+
+      if (i == listQuestions.length - 1) {
+        await tester.tap(find.text('Lihat Hasil'));
+        await tester.pumpAndSettle();
+      } else {
+        await tester.tap(find.text('Selanjutnya'));
+        await tester.pump();
+      }
+    }
+
+    // Semua jawaban benar -> skor 100% di ResultScreen.
+    expect(find.text('Hasil kuis untuk Andi'), findsOneWidget);
+    expect(find.text('100%'), findsOneWidget);
+    expect(find.text('Main Lagi'), findsOneWidget);
   });
 }
