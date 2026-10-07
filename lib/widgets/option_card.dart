@@ -38,10 +38,6 @@ class OptionCard extends StatelessWidget {
   /// Aksi saat kartu ditekan.
   final VoidCallback onTap;
 
-  // Warna semantik "benar"; sedikit lebih terang di dark mode.
-  static const Color _successLight = Color(0xFF16A34A);
-  static const Color _successDark = Color(0xFF4ADE80);
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -50,7 +46,7 @@ class OptionCard extends StatelessWidget {
     final textSecondary = appColors?.textSecondary ?? colors.onSurfaceVariant;
     final isDark = theme.brightness == Brightness.dark;
 
-    final success = isDark ? _successDark : _successLight;
+    final success = isDark ? AppColors.successDark : AppColors.successLight;
 
     final showCorrect = isSubmitted && isCorrect;
     final showWrong = isSubmitted && isSelected && !isCorrect;
