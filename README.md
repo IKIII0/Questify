@@ -99,6 +99,7 @@ tetap aman saat layar dirotasi.
 ### 🎥 Link Video Presentasi
 
 - **YouTube:** https://youtu.be/XItQtOPkz04
+- **Google Drive:** https://drive.google.com/file/d/1gpR2OrPk_99CXdZWqnUkNa_Pn8I3f6sN/view?usp=sharing
 
 ---
 
